@@ -39,13 +39,12 @@ class Task
      Don't use ORM\Column and ORM\JoinColumn in the same property:
      https://stackoverflow.com/questions/43579608/doctrine-foreign-keys-are-not-generated
      */
-
     /**
      * Many tasks belong to one project
      * @ORM\ManyToOne(targetEntity="Project", inversedBy="tasks")
      * @ORM\JoinColumn(name="project_id", referencedColumnName="id", onDelete="Cascade")
      */
-    private $projectId;
+    private $project;
 
 
     /**
@@ -107,27 +106,13 @@ class Task
     }
 
     /**
-     * Set projectId
-     *
-     * @param integer $projectId
-     *
-     * @return Task
-     */
-    public function setProjectId($projectId)
-    {
-        $this->projectId = $projectId;
-
-        return $this;
-    }
-
-    /**
-     * Get projectId
+     * Get project
      *
      * @return int
      */
-    public function getProjectId()
+    public function getProject()
     {
-        return $this->projectId;
+        return $this->project;
     }
 }
 

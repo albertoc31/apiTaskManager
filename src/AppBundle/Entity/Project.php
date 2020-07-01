@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Project
@@ -40,19 +41,20 @@ class Project
      Don't use ORM\Column and ORM\JoinColumn in the same property:
      https://stackoverflow.com/questions/43579608/doctrine-foreign-keys-are-not-generated
      */
-
     /**
      * Many projects belong to one user
      * @ORM\ManyToOne(targetEntity="User", inversedBy="projects")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="Cascade")
      */
-    private $userId;
+    private $user;
 
+    /*
+     * Don't use ORM\Column(name="tasks", type="simple_array", nullable=true) if you want to work with ArrayCollections
+     */
     /**
      * @var array
      * One project has many tasks. This is the inverse side.
-     * @ORM\OneToMany(targetEntity="Task", mappedBy="projectId")
-     * @ORM\Column(name="tasks", type="simple_array", nullable=true)
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="project")
      */
     private $tasks;
 
@@ -120,27 +122,21 @@ class Project
     }
 
     /**
-     * Set userId
-     *
-     * @param integer $userId
-     *
-     * @return Project
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
+     * Get user
      *
      * @return int
      */
-    public function getUserId()
+    public function getUser()
     {
-        return $this->userId;
+        return $this->user;
+    }
+
+    /**
+     * Get tasks
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }
 

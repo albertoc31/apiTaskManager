@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User
@@ -52,11 +53,13 @@ class User
      */
     private $roles;
 
+    /*
+     * Don't use ORM\Column(name="tasks", type="simple_array", nullable=true) if you want to work with ArrayCollections
+     */
     /**
      * @var array
      * One user has many projects. This is the inverse side.
-     * @ORM\OneToMany(targetEntity="Project", mappedBy="userId")
-     * @ORM\Column(name="projects", type="simple_array", nullable=true)
+     * @ORM\OneToMany(targetEntity="Project", mappedBy="user")
      */
     private $projects;
 
@@ -195,6 +198,14 @@ class User
     public function getRoles()
     {
         return json_decode($this->roles);
+    }
+
+    /**
+     * Get projects
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }
 
