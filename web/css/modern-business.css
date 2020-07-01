@@ -1,0 +1,224 @@
+/*!
+ * Start Bootstrap - Modern Business (https://startbootstrap.com/template-overviews/modern-business)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-logomodern-business-nav/blob/master/LICENSE)
+ */
+
+/* Hack for fixing at the bottom the footer */
+/* https://stackoverflow.com/questions/643879/css-to-make-html-page-footer-stay-at-bottom-of-the-page-with-a-minimum-height-b/25218797#25218797 */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  display: table;
+}
+footer {
+  display: table-row;
+  height: 5rem;
+}
+footer.py-5 {
+  padding-top: 2rem!important;
+  padding-bottom: 2rem!important;
+}
+footer .container {
+  margin-top: 1.5rem;
+}
+/* ===  END  === */
+
+body {
+  padding-top: 56px;
+}
+
+.carousel-item {
+  height: 65vh;
+  min-height: 300px;
+  background: no-repeat center center scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.portfolio-item {
+  margin-bottom: 30px;
+}
+
+.logo_head {
+  height: 50px;
+  margin-left: 5px;
+}
+
+.carousel-caption {
+  text-shadow: 1px 1px black;
+}
+.carousel-caption h3 {
+  font-size: 3em;
+}
+.carousel-caption p {
+  font-size: 1.4em;
+}
+.btn-primary {
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  vertical-align: top;
+}
+.btn-primary a{
+  color: #ffffff;
+  text-decoration: none ;
+}
+.btn-primary:hover a{
+  color: #afd4fb;
+  text-decoration: none ;
+}
+
+.form-error {
+  font-size: .9em;
+  color: #694a4e;
+  border: 1px solid #dcbdba;
+  background-color: #fce6df;
+  padding: 0 5px 0 5px;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  margin-bottom: 10px;
+}
+
+input[type='checkbox'].form-control {
+  height: 1rem;
+  width: auto;
+}
+.form-group label {
+  margin-right: 10px;
+}
+
+/* hack de datepicker */
+.datepicker > .datepicker-days {
+  display: inherit;
+}
+
+
+/* DivTable.com */
+.divTable{
+  display: table;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+.divTableRow {
+  display: table-row;
+}
+.divTableHeading {
+  background-color: #EEE;
+  display: table-header-group;
+}
+.divTableCell, .divTableHead {
+  border: 1px solid #dedede;
+  display: table-cell;
+  padding: 5px 5px 5px 5px;
+
+  color: #555555;
+  font-size: 0.9rem;
+  line-height: 1.2rem;
+  height: 3rem;
+}
+.divTableHead {
+  padding: 10px 5px 10px 5px;
+}
+.divTableCell.center, .divTableHead.center {
+  text-align: center;
+}
+.divTableHeading {
+  background-color: #EEE;
+  display: table-header-group;
+  font-weight: bold;
+}
+.divTableFoot {
+  background-color: #EEE;
+  display: table-footer-group;
+  font-weight: bold;
+}
+.divTableBody {
+  display: table-row-group;
+}
+
+span.activo {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: -0.6rem;
+  background-color: lawngreen;
+}
+span.inactivo {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: -0.6rem;
+  background-color: red;
+}
+
+.divTableCell .btn-primary {
+  margin: 2px;
+  font-size: 0.9rem;
+  padding: 0.2rem .5rem;
+}
+
+.width30 {
+  width: 30%;
+}
+
+/** asociaciones ficha **/
+.col-md-6 .my-3{
+  margin-top: 0rem!important;
+}
+
+
+/**  sidebar administracion  **/
+.list-group-item {
+  padding: .5rem 1rem;
+}
+.list-group label {
+  position: relative;
+  display: block;
+  padding: .15rem 1rem;
+  margin-bottom: -1px;
+  background-color: #000000;
+  color: #ffffff;
+  font-weight: bold;
+  border: 1px solid rgba(0,0,0,.125);
+}
+.list-group label:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+/** lightbox **/
+.link-lightbox {
+  position: relative;
+  display: inline-block;
+}
+.open-lightbox {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/** borrar registros y otras acciones **/
+.borrar {
+  display: inline-block;
+  margin-top: 0.4rem;
+  float: right;
+}
+.borrar .far{
+  font-size: 1.2rem;
+  line-height: 1rem;
+}
+
+/** crear categoria desde formulario activity **/
+
+input.nuevaCat {
+  margin-right: -2.6rem;
+  display:inline-block
+}
