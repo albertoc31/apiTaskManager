@@ -23,6 +23,9 @@
 /app/config/parameters.yml
 /app/config/parameters.ini
 
+# New JWT Token jwt_key_pass_phrase
+/app/config/jwt/
+
 # Managed by Composer
 /app/bootstrap.php.cache
 /var/bootstrap.php.cache

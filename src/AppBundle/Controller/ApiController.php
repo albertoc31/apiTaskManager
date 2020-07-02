@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
@@ -89,7 +90,7 @@ class ApiController extends Controller
                 return $response;
             }
         }
-        throw new BadRequestHttpException ('Wrong Id for User', null, 400);
+        throw new BadRequestHttpException ('Wrong Id for User', null, 422);
     }
 
     /**
@@ -127,7 +128,7 @@ class ApiController extends Controller
                 return $response;
             }
         }
-        throw new BadRequestHttpException ('Wrong Id for User or Project', null, 400);
+        throw new BadRequestHttpException ('Wrong Id for User or Project', null, 422);
     }
 
     /**
@@ -161,7 +162,7 @@ class ApiController extends Controller
                 return $response;
             }
         }
-        throw new BadRequestHttpException ('Wrong Id for User or Project or Task', null, 400);
+        throw new BadRequestHttpException ('Wrong Id for User or Project or Task', null, 422);
     }
 
     // mantengo este metodo para ver proyectos
@@ -200,6 +201,8 @@ class ApiController extends Controller
      */
     public function insertProjectAction($id, Request $request)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         $data = json_decode($request->getContent(), true);
 
         // TODO los usuarios posibles dependen del permiso de usuario
@@ -223,11 +226,15 @@ class ApiController extends Controller
             $entityManager->persist($project);
             $entityManager->flush();
 
+            $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/api";
+            $create_task_url = $baseurl . "/user/" . $user->getId() . "/project/" . $project->getId() . "/task";
+
             $project_array = [
                 "id" => $project->getId(),
                 "name" => $project->getName(),
                 "description" => $project->getDescription(),
-                "owner" => $project->getUser()->getRealname()
+                "owner" => $project->getUser()->getRealname(),
+                "create_task_url" => $create_task_url
             ];
 
             $response = new Response(json_encode($project_array, JSON_UNESCAPED_UNICODE));
@@ -236,7 +243,7 @@ class ApiController extends Controller
             return $response;
         }
 
-        throw new BadRequestHttpException ('Falta Id usuario o Datos malformados', null, 400);
+        throw new BadRequestHttpException ('Falta Id usuario o Datos malformados', null, 422);
     }
 
     /**
@@ -244,16 +251,23 @@ class ApiController extends Controller
      */
     public function insertTaskAction($id, $id2, Request $request)
     {
-        $data = json_decode($request->getContent(), true);
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         // TODO los usuarios posibles dependen del permiso de usuario
+
+        $logged_user = $this->getUser();
+        //var_dump($logged_user->getRoles());die(' ==> Roles de User en Controller ' . __FUNCTION__);
+
+        $data = json_decode($request->getContent(), true);
+
+
         $repository_project = $this->getDoctrine()->getRepository(Project::class);
 
         // tengo que darle el objeto User
         $project = $repository_project->findOneById($id2);
 
         if ($project->getUser()->getId() != $id) {
-            throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 400);
+            throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 422);
             die();
         }
 
@@ -285,6 +299,50 @@ class ApiController extends Controller
             return $response;
         }
 
-        throw new BadRequestHttpException ('Falta Id usuario o Id proyecto o Datos malformados', null, 400);
+        throw new BadRequestHttpException ('Falta Id usuario o Id proyecto o Datos malformados', null, 422);
+    }
+
+    /**
+     * @Route("/login", methods={"POST"})
+     */
+    public function apiLoginAction(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $user = $this->getDoctrine()
+            ->getRepository('AppBundle:User')
+            ->findOneBy(['username' => $data['username']]);
+
+        if (!$user) {
+            throw $this->createNotFoundException();
+        }
+
+        $isValid = $this->get('security.password_encoder')
+            ->isPasswordValid($user, $data['password']);
+        if (!$isValid) {
+            throw new BadCredentialsException();
+        }
+
+//        $config = $this->getParameter('kernel.root_dir');
+//        var_dump($config);die(' ==> end');
+
+        $token = $this->get('lexik_jwt_authentication.encoder')
+            ->encode([
+                'username' => $user->getUsername(),
+                'exp' => time() + 3600 // 1 hour expiration
+            ]);
+
+        $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/api";
+        $create_project_url = $baseurl . "/user/" . $user->getId() . "/project";
+
+        $login_array = [
+            "create_projects_url" => $create_project_url,
+            "token" => $token
+        ];
+
+        $response = new Response(json_encode($login_array, JSON_UNESCAPED_UNICODE));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 }

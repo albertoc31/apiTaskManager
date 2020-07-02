@@ -62,6 +62,13 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
+# JWT token configuration
+lexik_jwt_authentication:
+    secret_key: '%kernel.root_dir%/config/jwt/private.pem'
+    public_key: '%kernel.root_dir%/config/jwt/public.pem'
+    pass_phrase: '%jwt_key_pass_phrase%'
+    token_ttl: '3600'
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: '%mailer_transport%'

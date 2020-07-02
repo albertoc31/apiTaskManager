@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
@@ -11,7 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @var int
@@ -67,6 +68,19 @@ class User
     public function __construct()
     {
         $this->projects = new ArrayCollection();
+    }
+
+
+    public function getSalt()
+    {
+        // this is needed because of UserInterface
+        return null;
+    }
+
+    public function eraseCredentials()
+    {
+        // this is needed because of UserInterface
+        return null;
     }
 
     /**

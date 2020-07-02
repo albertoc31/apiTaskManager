@@ -2,7 +2,13 @@
 Exercise of developing a task manager through a restFull API with JWT tocken autentication
 
 
-### TODO
+#### CRUD operation
+ApiController implements RestFull CRUD operations
+
+#### JWT Authentication Bundle
+Installed JWTAuthenticationBundle for JWTtoken generation & validation. Using private/public keys pair.
+
+#### TODO
 
 Use roles in User entity to allow **admin user** to create, update and delete projects & tasks for every user (view users, projects & tasks is open for everyone)
 
