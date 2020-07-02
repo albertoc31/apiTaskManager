@@ -122,6 +122,18 @@ class Project
     }
 
     /**
+     * Set user
+     *
+     * @return Project
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
      * Get user
      *
      * @return int

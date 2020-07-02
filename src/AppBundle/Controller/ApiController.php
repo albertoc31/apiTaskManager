@@ -194,4 +194,97 @@ class ApiController extends Controller
         return $response;
 
     }
+
+    /**
+     * @Route("/user/{id}/project", name="_insert_project", methods={"POST"})
+     */
+    public function insertProjectAction($id, Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        // TODO los usuarios posibles dependen del permiso de usuario
+        $repository_user = $this->getDoctrine()->getRepository(User::class);
+
+
+        if (empty($data['name']) || empty($data['description'])) {
+            $data = null;
+        }
+
+        if ($id != null && $data != null) {
+            $project = new Project();
+            $project->setName($data['name']);
+            $project->setDescription($data['description']);
+
+            // tengo que darle el objeto User
+            $user = $repository_user->findOneById($id);
+            $project->setUser($user);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($project);
+            $entityManager->flush();
+
+            $project_array = [
+                "id" => $project->getId(),
+                "name" => $project->getName(),
+                "description" => $project->getDescription(),
+                "owner" => $project->getUser()->getRealname()
+            ];
+
+            $response = new Response(json_encode($project_array, JSON_UNESCAPED_UNICODE));
+            $response->headers->set('Content-Type', 'application/json');
+
+            return $response;
+        }
+
+        throw new BadRequestHttpException ('Falta Id usuario o Datos malformados', null, 400);
+    }
+
+    /**
+     * @Route("/user/{id}/project/{id2}/task", name="_insert_task", methods={"POST"})
+     */
+    public function insertTaskAction($id, $id2, Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        // TODO los usuarios posibles dependen del permiso de usuario
+        $repository_project = $this->getDoctrine()->getRepository(Project::class);
+
+        // tengo que darle el objeto User
+        $project = $repository_project->findOneById($id2);
+
+        if ($project->getUser()->getId() != $id) {
+            throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 400);
+            die();
+        }
+
+        if (empty($data['name']) || empty($data['description']) ) {
+            $data = null;
+        }
+
+        if ($id != null && $id2 != null && $data != null) {
+            $task = new Task();
+            $task->setName($data['name']);
+            $task->setDescription($data['description']);
+            $task->setProject($project);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($task);
+            $entityManager->flush();
+
+            $task_array = [
+                "id" => $task->getId(),
+                "name" => $task->getName(),
+                "description" => $task->getDescription(),
+                "owner" => $task->getProject()->getUser()->getRealname(),
+                "project" => $task->getProject()->getName()
+            ];
+
+            $response = new Response(json_encode($task_array, JSON_UNESCAPED_UNICODE));
+            $response->headers->set('Content-Type', 'application/json');
+
+            return $response;
+        }
+
+        throw new BadRequestHttpException ('Falta Id usuario o Id proyecto o Datos malformados', null, 400);
+    }
 }

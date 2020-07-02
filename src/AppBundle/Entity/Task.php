@@ -106,6 +106,18 @@ class Task
     }
 
     /**
+     * Set project
+     *
+     * @return Task
+     */
+    public function setProject($project)
+    {
+        $this->project = $project;
+
+        return $this;
+    }
+
+    /**
      * Get project
      *
      * @return int
