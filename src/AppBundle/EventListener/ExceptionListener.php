@@ -36,7 +36,7 @@ class ExceptionListener
         // holds status code and header details
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace($exception->getHeaders());
+//            $response->headers->replace($exception->getHeaders());
         } else {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }

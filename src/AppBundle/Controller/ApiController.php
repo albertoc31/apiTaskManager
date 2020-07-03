@@ -247,6 +247,66 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/user/{id}/project/{id2}", name="_edit_project", methods={"PUT"})
+     */
+    public function editProjectAction($id, $id2, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['name']) && empty($data['description'])) {
+            $data = null;
+        }
+
+        if ($id != null && $id2 != null && $data != null) {
+            $repository = $this->getDoctrine()->getRepository(Project::class);
+            $project = $repository->findOneById($id2);
+
+            $logged_user = $this->getUser();
+
+            // TODO los usuarios posibles dependen del permiso de usuario
+            if ($project->getUser()->getId() != $id || $logged_user->getId() != $id) {
+                throw new BadRequestHttpException ('No tienes permisos para editar este proyecto', null, 422);
+            }
+            if ($project) {
+                if (!empty($data['name'])) {
+                    $project->setName($data['name']);
+                }
+                if (!empty($data['description'])) {
+                    $project->setDescription($data['description']);
+                }
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($project);
+                $entityManager->flush();
+
+                // Devolvemos la info de proyecto igual que en el GET
+                $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/api";
+                $project_array = [
+                    "id" => $project->getId(),
+                    "name" => $project->getName(),
+                    "description" => $project->getDescription(),
+                    "owner" => $project->getUser()->getRealname(),
+                    "tasks" => array_map(function ($task) use ($baseurl, $project){
+                        return [
+                            "task_name" => $task->getName(),
+                            "task_url" => $baseurl . "/user/" . $task->getProject()->getUser()->getId() . "/project/" . $task->getProject()->getId() . "/task/" . $task->getId()
+                        ];
+                    }, $project->getTasks()->toArray())
+                ];
+
+                $response = new Response(json_encode($project_array, JSON_UNESCAPED_UNICODE));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+
+        throw new BadRequestHttpException ('Falta Id usuario o proyecto o Datos malformados', null, 422);
+    }
+
+    /**
      * @Route("/user/{id}/project/{id2}/task", name="_insert_task", methods={"POST"})
      */
     public function insertTaskAction($id, $id2, Request $request)
@@ -266,9 +326,8 @@ class ApiController extends Controller
         // tengo que darle el objeto User
         $project = $repository_project->findOneById($id2);
 
-        if ($project->getUser()->getId() != $id) {
+        if ($project->getUser()->getId() != $id || $logged_user->getId() != $id) {
             throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 422);
-            die();
         }
 
         if (empty($data['name']) || empty($data['description']) ) {
@@ -300,6 +359,66 @@ class ApiController extends Controller
         }
 
         throw new BadRequestHttpException ('Falta Id usuario o Id proyecto o Datos malformados', null, 422);
+    }
+
+    /**
+     * @Route("/user/{id}/project/{id2}/task/{id3}", name="_edit_task", methods={"PUT"})
+     */
+    public function editTaskAction($id, $id2, $id3, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['name']) && empty($data['description'])) {
+            $data = null;
+        }
+
+        if ($id != null && $id2 != null && $id3 != null && $data != null) {
+            $repository = $this->getDoctrine()->getRepository(Task::class);
+            $task = $repository->findOneById($id3);
+
+            if ($task == null) {
+                throw new BadRequestHttpException ('Esta tarea no existe', null, 422);
+            }
+
+            $project = $task->getProject();
+
+            // TODO los usuarios posibles dependen del permiso de usuario
+
+            $logged_user = $this->getUser();
+            if ($project->getUser()->getId() != $id || $logged_user->getId() != $id) {
+                throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 422);
+            }
+
+            if ($task && $project->getId() == $id2) {
+
+                if (!empty($data['name'])) {
+                    $task->setName($data['name']);
+                }
+                if (!empty($data['description'])) {
+                    $task->setDescription($data['description']);
+                }
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($task);
+                $entityManager->flush();
+
+                $task_array = [
+                    "id" => $task->getId(),
+                    "name" => $task->getName(),
+                    "description" => $task->getDescription(),
+                    "owner" => $task->getProject()->getUser()->getRealname(),
+                    "project" => $task->getProject()->getName()
+                ];
+
+                $response = new Response(json_encode($task_array, JSON_UNESCAPED_UNICODE));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+        throw new BadRequestHttpException ('Wrong Id for User or Project or Task o malformed data', null, 422);
     }
 
     /**
