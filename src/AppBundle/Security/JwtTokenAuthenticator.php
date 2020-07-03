@@ -5,6 +5,7 @@ namespace AppBundle\Security;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -52,7 +53,7 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
         $data = $this->jwtEncoder->decode($credentials);
 
         if ($data === false) {
-            throw new CustomUserMessageAuthenticationException('Invalid Token');
+            throw new CustomUserMessageAuthenticationException('Invalid Token', [], 401);
         }
 
         $username = $data['username'];
@@ -67,12 +68,7 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
     }
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $data = [
-            // you may want to customize or obfuscate the message first
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
-        ];
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        throw new CustomUserMessageAuthenticationException(strtr($exception->getMessageKey(), $exception->getMessageData()));
     }
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
@@ -88,11 +84,6 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        $data = [
-            // you might translate this message
-            'message' => 'Authentication Required Neng'
-        ];
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        throw new CustomUserMessageAuthenticationException('Authentication Required', [], 401);
     }
 }

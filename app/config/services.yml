@@ -34,9 +34,9 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
-    #    AppBundle\EventListener\ExceptionListener:
-    #        tags:
-    #            - { name: kernel.event_listener, event: kernel.exception }
+    AppBundle\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
 
     jwt_token_authenticator:
         class: AppBundle\Security\JwtTokenAuthenticator
