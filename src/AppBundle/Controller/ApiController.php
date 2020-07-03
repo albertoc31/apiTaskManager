@@ -307,6 +307,44 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/user/{id}/project/{id2}", name="_delete_project", methods={"DELETE"})
+     */
+    public function deleteProjectAction($id, $id2, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        if ($id != null && $id2 != null ) {
+            $repository = $this->getDoctrine()->getRepository(Project::class);
+            $project = $repository->findOneById($id2);
+
+            $logged_user = $this->getUser();
+
+            // TODO los usuarios posibles dependen del permiso de usuario
+            if ($project->getUser()->getId() != $id || $logged_user->getId() != $id) {
+                throw new BadRequestHttpException ('No tienes permisos para borrar este proyecto', null, 422);
+            }
+            if (!$project) {
+                throw new BadRequestHttpException ('No existe este proyecto', null, 422);
+            } else {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($project);
+                // $entityManager->flush();
+
+                $project_array = [
+                    'code' => 200,
+                    'message' => 'Project deleted'
+                ];
+
+                $response = new Response(json_encode($project_array, JSON_UNESCAPED_UNICODE));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+        throw new BadRequestHttpException ('Falta Id usuario o proyecto', null, 422);
+    }
+
+    /**
      * @Route("/user/{id}/project/{id2}/task", name="_insert_task", methods={"POST"})
      */
     public function insertTaskAction($id, $id2, Request $request)
@@ -419,6 +457,50 @@ class ApiController extends Controller
             }
         }
         throw new BadRequestHttpException ('Wrong Id for User or Project or Task o malformed data', null, 422);
+    }
+
+    /**
+     * @Route("/user/{id}/project/{id2}/task/{id3}", name="_delete_task", methods={"DELETE"})
+     */
+    public function deleteTaskAction($id, $id2, $id3, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+
+        if ($id != null && $id2 != null && $id3 != null ) {
+            $repository = $this->getDoctrine()->getRepository(Task::class);
+            $task = $repository->findOneById($id3);
+
+            if ($task == null) {
+                throw new BadRequestHttpException ('Esta tarea no existe', null, 422);
+            }
+
+            $project = $task->getProject();
+
+            // TODO los usuarios posibles dependen del permiso de usuario
+
+            $logged_user = $this->getUser();
+            if ($project->getUser()->getId() != $id || $logged_user->getId() != $id) {
+                throw new BadRequestHttpException ('Este usuario no es el propietario de este proyecto', null, 422);
+            }
+
+            if ($task && $project->getId() == $id2) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($task);
+                // $entityManager->flush();
+
+                $project_array = [
+                    'code' => 200,
+                    'message' => 'Task deleted'
+                ];
+
+                $response = new Response(json_encode($project_array, JSON_UNESCAPED_UNICODE));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+        throw new BadRequestHttpException ('Wrong Id for User or Project or Task', null, 422);
     }
 
     /**
