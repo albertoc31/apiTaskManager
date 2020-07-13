@@ -6,7 +6,7 @@ namespace AppBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Component\Security\Guard\AuthenticatorInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,8 +20,9 @@ use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class JwtTokenAuthenticator extends AbstractGuardAuthenticator
+class JwtTokenAuthenticator implements AuthenticatorInterface
 {
 
     private $jwtEncoder;
@@ -85,5 +86,34 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         throw new CustomUserMessageAuthenticationException('Authentication Required', [], 401);
+    }
+
+    /**
+     * Does the authenticator support the given Request?
+     *
+     * If this returns false, the authenticator will be skipped.
+     *
+     * @return bool
+     */
+    public function supports(Request $request)
+    {
+        // TODO: Implement supports() method.
+    }
+    /**
+     * Create an authenticated token for the given user.
+     *
+     * If you don't care about which token class is used or don't really
+     * understand what a "token" is, you can skip this method by extending
+     * the AbstractGuardAuthenticator class from your authenticator.
+     *
+     * @param string $providerKey The provider (i.e. firewall) key
+     *
+     * @return GuardTokenInterface
+     * @see AbstractGuardAuthenticator
+     *
+     */
+    public function createAuthenticatedToken(UserInterface $user, $providerKey)
+    {
+        // TODO: Implement createAuthenticatedToken() method.
     }
 }
