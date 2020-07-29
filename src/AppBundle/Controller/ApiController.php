@@ -9,7 +9,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
@@ -19,7 +18,7 @@ use AppBundle\Entity\Task;
 
 
 /**
- * @Route("/api", name="api")
+ * @Route("/api-OLD", name="api-OLD")
  */
 class ApiController extends Controller
 {
@@ -59,7 +58,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/user/{id}", name="_view_user", methods={"GET"})
+     * @Route("/user/{id}", name="_view_user-OLD", methods={"GET"})
      */
     public function viewUserAction($id, Request $request)
     {
@@ -94,7 +93,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/user/{id}/project/{id2}", name="_view_project", methods={"GET"})
+     * @Route("/user/{id}/project/{id2}", name="_view_project-OLD", methods={"GET"})
      */
     public function viewProjectAction($id, $id2, Request $request)
     {
@@ -132,7 +131,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/user/{id}/project/{id2}/task/{id3}", name="_view_task", methods={"GET"})
+     * @Route("/user/{id}/project/{id2}/task/{id3}", name="_view_task-OLD", methods={"GET"})
      */
     public function viewTaskAction($id, $id2, $id3, Request $request)
     {
@@ -504,7 +503,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/login", methods={"POST"})
+     * @Route("/login-OLD", methods={"POST"})
      */
     public function apiLoginAction(Request $request)
     {
