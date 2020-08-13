@@ -22,7 +22,9 @@ use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderToken
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 
-class JwtTokenAuthenticator implements AuthenticatorInterface
+use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+
+class JwtTokenAuthenticator extends AbstractGuardAuthenticator
 {
 
     private $jwtEncoder;
@@ -37,12 +39,14 @@ class JwtTokenAuthenticator implements AuthenticatorInterface
 
     public function getCredentials(Request $request)
     {
+        //var_dump($request->headers->has('authorization'));die(' ==> Paso por getCredentials');
         $extractor = new AuthorizationHeaderTokenExtractor(
             'Bearer',
             'Authorization'
         );
 
         $token = $extractor->extract($request);
+
         if (!$token) {
             return;
         }
@@ -98,6 +102,7 @@ class JwtTokenAuthenticator implements AuthenticatorInterface
     public function supports(Request $request)
     {
         // TODO: Implement supports() method.
+        return $request->headers->has('authorization');
     }
     /**
      * Create an authenticated token for the given user.
@@ -112,8 +117,8 @@ class JwtTokenAuthenticator implements AuthenticatorInterface
      * @see AbstractGuardAuthenticator
      *
      */
-    public function createAuthenticatedToken(UserInterface $user, $providerKey)
+    /*public function createAuthenticatedToken(UserInterface $user, $providerKey)
     {
         // TODO: Implement createAuthenticatedToken() method.
-    }
+    }*/
 }
